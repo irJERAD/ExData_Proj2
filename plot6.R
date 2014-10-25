@@ -11,4 +11,20 @@ LA <- NEI[(NEI$fips == "06037"),]
 BAtotal <- aggregate(Emissions ~ year + type, data = BA, sum)
 
 # create LA sum of emission over 4 individual year periods and emission type
-LAtotal <- aggregate(Emissions ~ year + type, data = BA, sum)
+LAtotal <- aggregate(Emissions ~ year + type, data = LA, sum)
+
+# subset data to vehicles used on Road for both BA and LA
+BAsub <- BAtotal[which(BAtotal$type == "ON-ROAD"),]
+
+LAsub <- LAtotal[which(LAtotal$type == "ON-ROAD"),]
+
+LAsub$place <- "LA"
+BAsub$place <- "BA"
+# bind data
+dat <- rbind(LAsub,BAsub)
+
+# start png graphics device; create plot6.png
+png(filename = "plot6.png")
+qplot(year, Emissions, data = dat, geom="freqpoly", stat="identity",
+      colour = place)
+dev.off() # turn off graphics device
